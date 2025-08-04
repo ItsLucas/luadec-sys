@@ -1,0 +1,43 @@
+[package]
+name = "luadec-sys"
+version = "0.1.0"
+edition = "2021"
+authors = ["ItsLucas <itslucas@itslucas.me>"]
+description = "Raw FFI bindings for LuaDec - A Lua 5.1 bytecode decompiler"
+repository = "https://github.com/ItsLucas/luadec-rust"
+license = "MIT"
+keywords = ["lua", "decompiler", "bytecode", "ffi", "sys"]
+categories = ["external-ffi-bindings", "parsing"]
+readme = "README.md"
+documentation = "https://docs.rs/luadec-sys"
+build = "build.rs"
+
+exclude = [
+    "vendor/**/*.o",
+    "vendor/**/*.a", 
+    "vendor/**/lua",
+    "vendor/**/luac",
+    "vendor/**/luadec",
+    "vendor/**/luaopswap",
+    "vendor/**/luareplace",
+    "vendor/**/.git*",
+    "vendor/**/test/**",
+    "vendor/**/doc/**",
+    "vendor/**/etc/**",
+]
+
+[lib]
+name = "luadec_sys"
+crate-type = ["lib"]
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = "1.0"
+
+[package.metadata.docs.rs]
+# Build docs with all features on docs.rs
+all-features = true
+# Use a specific target for consistent docs
+targets = ["x86_64-unknown-linux-gnu"]
