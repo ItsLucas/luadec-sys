@@ -1,75 +1,86 @@
 use std::env;
-use std::process::Command;
 
 fn main() {
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     
-    let lua_dir = format!("{}/vendor/lua-5.1", manifest_dir);
-    let luadec_dir = format!("{}/vendor/luadec", manifest_dir);
-    let _bin_dir = format!("{}/vendor/bin", manifest_dir);
-    let src_dir = format!("{}/src", lua_dir);
-    
     println!("cargo:rerun-if-changed=vendor/lua-5.1");
     println!("cargo:rerun-if-changed=vendor/luadec");
     println!("cargo:rerun-if-changed=src/wrapper.c");
     
-    // Determine the platform-specific make target for Lua
-    let lua_platform = match target_os.as_str() {
-        "macos" => "macosx",
-        "linux" => "linux",
-        _ => "generic",
-    };
+    let lua_src_dir = format!("{}/vendor/lua-5.1/src", manifest_dir);
+    let luadec_src_dir = format!("{}/vendor/luadec", manifest_dir);
     
-    // Build Lua 5.1 first
-    println!("Building Lua 5.1 for platform: {}", lua_platform);
-    let lua_build = Command::new("make")
-        .current_dir(&lua_dir)
-        .arg(lua_platform)
-        .status()
-        .expect("Failed to build Lua 5.1");
-    
-    if !lua_build.success() {
-        panic!("Failed to build Lua 5.1");
+    // Platform-specific compile flags for Lua
+    let mut lua_cflags = vec!["-O2", "-Wall"];
+    match target_os.as_str() {
+        "macos" => {
+            lua_cflags.push("-DLUA_USE_MACOSX");
+        }
+        "linux" => {
+            lua_cflags.push("-DLUA_USE_LINUX");
+        }
+        _ => {
+            lua_cflags.push("-DLUA_USE_POSIX");
+        }
     }
     
-    // Build luadec
-    println!("Building luadec");
-    let luadec_build = Command::new("make")
-        .current_dir(&luadec_dir)
-        .arg("LUAVER=5.1")
-        .status()
-        .expect("Failed to build luadec");
-    
-    if !luadec_build.success() {
-        panic!("Failed to build luadec");
+    // Build Lua 5.1 library
+    let mut lua_build = cc::Build::new();
+    lua_build
+        .include(&lua_src_dir)
+        .define("LUAVER", "5.1");
+        
+    for flag in &lua_cflags {
+        lua_build.flag(flag);
     }
     
-    // Create our C wrapper
-    cc::Build::new()
-        .file("src/wrapper.c")
-        .include(&src_dir)
-        .include(&luadec_dir)
-        .define("LUAVER", "5.1")
-        .compile("luadec_wrapper");
-    
-    // Link against the built libraries
-    println!("cargo:rustc-link-search=native={}/src", lua_dir);
-    println!("cargo:rustc-link-lib=static=lua");
-    
-    // Create a static library from luadec object files
-    let mut lib_builder = cc::Build::new();
-    let luadec_objects = [
-        "luadec.o", "guess.o", "decompile.o", "disassemble.o", "proto.o", 
-        "StringBuffer.o", "structs.o", "statement.o", 
-        "macro-array.o", "expression.o"
+    // Core Lua source files
+    let lua_sources = [
+        "lapi.c", "lcode.c", "ldebug.c", "ldo.c", "ldump.c", "lfunc.c",
+        "lgc.c", "llex.c", "lmem.c", "lobject.c", "lopcodes.c", "lparser.c",
+        "lstate.c", "lstring.c", "ltable.c", "ltm.c", "lundump.c", "lvm.c",
+        "lzio.c", "lauxlib.c", "lbaselib.c", "ldblib.c", "liolib.c",
+        "lmathlib.c", "loslib.c", "ltablib.c", "lstrlib.c", "loadlib.c", "linit.c"
     ];
     
-    for obj in &luadec_objects {
-        lib_builder.object(format!("{}/{}", luadec_dir, obj));
+    for source in &lua_sources {
+        lua_build.file(format!("{}/{}", lua_src_dir, source));
     }
     
-    lib_builder.compile("luadec_objects");
+    lua_build.compile("lua");
+    
+    // Build LuaDec library
+    let mut luadec_build = cc::Build::new();
+    luadec_build
+        .include(&lua_src_dir)
+        .include(&luadec_src_dir)
+        .define("LUAVER", "5.1");
+        
+    for flag in &lua_cflags {
+        luadec_build.flag(flag);
+    }
+    
+    // LuaDec source files
+    let luadec_sources = [
+        "decompile.c", "guess.c", "disassemble.c", "proto.c",
+        "StringBuffer.c", "structs.c", "statement.c", 
+        "macro-array.c", "expression.c", "lundump-5.1.c"
+    ];
+    
+    for source in &luadec_sources {
+        luadec_build.file(format!("{}/{}", luadec_src_dir, source));
+    }
+    
+    luadec_build.compile("luadec");
+    
+    // Build our C wrapper
+    cc::Build::new()
+        .file("src/wrapper.c")
+        .include(&lua_src_dir)
+        .include(&luadec_src_dir)
+        .define("LUAVER", "5.1")
+        .compile("luadec_wrapper");
     
     // Link system libraries
     match target_os.as_str() {
