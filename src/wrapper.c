@@ -29,7 +29,7 @@ int guess_locals = 1;
 int string_encoding = 0; // ASCII encoding
 lua_State* glstate = NULL;
 Proto* glproto = NULL;
-StringBuffer* errorStr = NULL;
+StringBuffer* errorStrBuf = NULL;
 
 // Function declarations from luadec.c
 extern void InitOperators(void);
@@ -133,14 +133,14 @@ DecompileResult* luadec_decompile_buffer(const char* bytecode, size_t size) {
     glproto = f;
     
     // Initialize error string buffer
-    errorStr = StringBuffer_new(NULL);
+    errorStrBuf = StringBuffer_new(NULL);
     
     // Perform decompilation
     char* code = ProcessCode(f, 0, 0, luadec_strdup("0"));
     
     // Clean up error buffer
-    StringBuffer_delete(errorStr);
-    errorStr = NULL;
+    StringBuffer_delete(errorStrBuf);
+    errorStrBuf = NULL;
     
     if (code) {
         result->result = strdup(code);

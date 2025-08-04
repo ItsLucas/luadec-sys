@@ -1,6 +1,6 @@
 [package]
 name = "luadec-sys"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["ItsLucas <itslucas@itslucas.me>"]
 description = "Raw FFI bindings for LuaDec - A Lua 5.1 bytecode decompiler"
