@@ -41,3 +41,6 @@ vendor/luadec/luaopswap
 vendor/luadec/luareplace
 vendor/luadec/allopcodes_lua.h
 vendor/luadec/allopcodes_luac.h
+
+# LLM
+CLAUDE.md
