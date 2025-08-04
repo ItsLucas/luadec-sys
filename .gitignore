@@ -1,0 +1,43 @@
+# Rust
+/target/
+Cargo.lock
+
+# Build artifacts
+*.o
+*.a
+*.exe
+*.dll
+*.so
+*.dylib
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test files
+*.luac
+test.lua
+
+# Vendor build artifacts
+vendor/lua-5.1/src/*.o
+vendor/lua-5.1/src/*.a
+vendor/luadec/*.o
+vendor/lua-5.1/src/lua
+vendor/lua-5.1/src/luac
+vendor/luadec/luadec
+vendor/luadec/luaopswap
+vendor/luadec/luareplace
+vendor/luadec/allopcodes_lua.h
+vendor/luadec/allopcodes_luac.h
