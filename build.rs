@@ -10,14 +10,14 @@ fn main() {
     println!("cargo:rerun-if-changed=src/wrapper.c");
     
     // Choose Lua version based on features
-    let lua_version = if env::var("CARGO_FEATURE_LUA_5_1_32").is_ok() {
-        "lua-5.1-32"
-    } else {
-        "lua-5.1"
-    };
+    #[cfg(feature = "lua-5.1-32")]
+    let lua_version = "lua-5.1-32";
+    #[cfg(not(feature = "lua-5.1-32"))]
+    let lua_version = "lua-5.1";
+
     let lua_src_dir = format!("{}/vendor/{}/src", manifest_dir, lua_version);
     let luadec_src_dir = format!("{}/vendor/luadec", manifest_dir);
-    
+
     // Platform-specific compile flags for Lua
     let mut lua_cflags = vec!["-O2", "-Wall"];
     match target_os.as_str() {
