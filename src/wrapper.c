@@ -38,9 +38,9 @@ extern char* luadec_strdup(const char* s);
 
 // Functions from luadec.c that we need to define
 Proto* toproto(lua_State* L, int i) {
-    // Get the closure from the stack and extract its Proto
-    const TValue* o = L->base + i - 1;  // Lua uses 1-based indexing
-    return clvalue(o)->l.p;
+    // Get the closure from the stack using lua_topointer like original luadec
+    const Closure* c = (const Closure*)lua_topointer(L, i);
+    return c->l.p;
 }
 
 Proto* combine(lua_State* L, int n) {

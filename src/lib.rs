@@ -28,3 +28,22 @@ extern "C" {
     /// Get the error string (NULL if no error)
     pub fn luadec_get_error(result: *const DecompileResult) -> *const c_char;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_decompile_buffer() {
+        // This is just a placeholder test to ensure the bindings compile
+        unsafe {
+            // Read test2.lua
+            let result = std::fs::read("test2.lua").unwrap();
+            let bytecode = result.as_ptr() as *const c_char;
+            let size: size_t = result.len() as size_t;
+            let result = luadec_decompile_buffer(bytecode, size);
+            assert!(!result.is_null());
+            luadec_free_result(result);
+        }
+    }
+}
