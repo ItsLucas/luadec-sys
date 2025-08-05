@@ -5,10 +5,17 @@ fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     
     println!("cargo:rerun-if-changed=vendor/lua-5.1");
+    println!("cargo:rerun-if-changed=vendor/lua-5.1-32");
     println!("cargo:rerun-if-changed=vendor/luadec");
     println!("cargo:rerun-if-changed=src/wrapper.c");
     
-    let lua_src_dir = format!("{}/vendor/lua-5.1/src", manifest_dir);
+    // Choose Lua version based on features
+    let lua_version = if env::var("CARGO_FEATURE_LUA_5_1_32").is_ok() {
+        "lua-5.1-32"
+    } else {
+        "lua-5.1"
+    };
+    let lua_src_dir = format!("{}/vendor/{}/src", manifest_dir, lua_version);
     let luadec_src_dir = format!("{}/vendor/luadec", manifest_dir);
     
     // Platform-specific compile flags for Lua
