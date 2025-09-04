@@ -38,9 +38,6 @@ extern void InitOperators(void);
 extern int luaU_guess_locals(Proto * f, int main);
 extern char* luadec_strdup(const char* src);
 
-// Global error buffer from decompile.c that ProcessCode expects
-extern StringBuffer* errorStr;
-
 // Result structure for library interface
 typedef struct {
     char* result;
@@ -122,15 +119,9 @@ luadec_result_t* luadec_decompile_buffer(const char* bytecode, size_t size) {
         luaU_guess_locals(f, 0);
     }
     
-    // Initialize error string buffer (required by ProcessCode)
-    errorStr = StringBuffer_new(NULL);
-    
     // Use ProcessCode directly to get the decompiled string
     char* code = ProcessCode(f, 0, 0, luadec_strdup("0"));
-    
-    // Clean up error string buffer
-    StringBuffer_delete(errorStr);
-    errorStr = NULL;
+
     
     if (code) {
         result->result = strdup(code);

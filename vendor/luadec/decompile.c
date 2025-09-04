@@ -37,7 +37,6 @@ extern Proto* glproto;
 
 char unknown_local[] = { "ERROR_unknown_local_xxxx" };
 char unknown_upvalue[] = { "ERROR_unknown_upvalue_xxxx" };
-StringBuffer* errorStr;
 char errortmp[256];
 
 /*
@@ -116,7 +115,7 @@ char* luadec_strdup(const char* src) {
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-#define SET_ERROR(F,e) { StringBuffer_printf(errorStr,"-- DECOMPILER ERROR at PC%d: %s\n", (F)->pc, (e)); RawAddStatement((F),errorStr); }
+#define SET_ERROR(F,e) { do {} while(0); }
 /*  error = e; errorCode = __LINE__; */ /*if (debug) { printf("DECOMPILER ERROR: %s\n", e);  }*/
 
 extern int debug;
@@ -1991,19 +1990,19 @@ char* ProcessCode(Proto* f, int indent, int func_checking, char* funcnumstr) {
 
 		F->pc = pc;
 
-		// pop ËùÓÐ endpc < pc µÄ
+		// pop ï¿½ï¿½ï¿½ï¿½ endpc < pc ï¿½ï¿½
 		while (RvarTop > 0 && f->locvars[Rvar[RvarTop-1]].endpc < pc + 1) {
 			RvarTop--;
 			Rvar[RvarTop] = -1;
 		}
-		// push ËùÓÐ startpc <= pc µÄ£¬ÒÆµ½ÏÂÒ»¸öÎ´Ê¹ÓÃµÄ±äÁ¿
+		// push ï¿½ï¿½ï¿½ï¿½ startpc <= pc ï¿½Ä£ï¿½ï¿½Æµï¿½ï¿½ï¿½Ò»ï¿½ï¿½Î´Ê¹ï¿½ÃµÄ±ï¿½ï¿½ï¿½
 		while (currLocVar < f->sizelocvars && f->locvars[currLocVar].startpc <= pc + 1) {
 			Rvar[RvarTop] = currLocVar;
 			RvarTop++;
 			currLocVar++;
 			TestLocVarIndex(RvarTop-1, pc);
 		}
-		// ÄÇÃ´´ËÊ± vars[r] ¼´¶ÔÓ¦ reg[r] µÄ±äÁ¿
+		// ï¿½ï¿½Ã´ï¿½ï¿½Ê± vars[r] ï¿½ï¿½ï¿½ï¿½Ó¦ reg[r] ï¿½Ä±ï¿½ï¿½ï¿½
 
 		if (pc > F->loop_ptr->end) {
 			next_child = F->loop_ptr->next;
@@ -3203,9 +3202,7 @@ void luaU_decompile(Proto* f, int dflag) {
 	char* code;
 	debug = dflag;
 	functionnum = 0;
-	errorStr = StringBuffer_new(NULL);
 	code = ProcessCode(f, 0, 0, luadec_strdup("0"));
-	StringBuffer_delete(errorStr);
 	printf("%s\n", code);
 	free(code);
 	fflush(stdout);
@@ -3299,9 +3296,7 @@ void luaU_decompileSubFunction(Proto* f, int dflag, const char* funcnumstr) {
 		return;
 	}
 
-	errorStr = StringBuffer_new(NULL);
 	code = ProcessSubFunction(cf, 0, realfuncnumstr);
-	StringBuffer_delete(errorStr);
 	printf("%s\n", code);
 	free(code);
 	fflush(stdout);
