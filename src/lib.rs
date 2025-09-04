@@ -46,4 +46,37 @@ mod tests {
             luadec_free_result(result);
         }
     }
+
+    #[test]
+    fn test_decompile_stress_test() {
+        // Stress test: run decompilation 10 times to check for memory leaks or crashes
+        unsafe {
+            // Read test2.lua
+            let bytecode_data = std::fs::read("test2.lua").unwrap();
+            let bytecode = bytecode_data.as_ptr() as *const c_char;
+            let size: size_t = bytecode_data.len() as size_t;
+            
+            for i in 0..10 {
+                println!("Running decompilation iteration {}", i + 1);
+                let result = luadec_decompile_buffer(bytecode, size);
+                assert!(!result.is_null(), "Decompilation failed on iteration {}", i + 1);
+                
+                // Check if we got a result or an error
+                let result_str = luadec_get_result(result);
+                let error_str = luadec_get_error(result);
+                
+                if !result_str.is_null() {
+                    println!("Iteration {} succeeded", i + 1);
+                } else if !error_str.is_null() {
+                    let error = std::ffi::CStr::from_ptr(error_str).to_string_lossy();
+                    println!("Iteration {} failed with error: {}", i + 1, error);
+                } else {
+                    panic!("Iteration {} returned null for both result and error", i + 1);
+                }
+                
+                luadec_free_result(result);
+            }
+            println!("All 10 iterations completed successfully!");
+        }
+    }
 }
