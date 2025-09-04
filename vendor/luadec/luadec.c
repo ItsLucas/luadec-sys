@@ -405,6 +405,7 @@ int printFileNames(FILE* out) {
 	return gargc - filename_argv_from;
 }
 
+#ifdef LUADEC_MAIN
 int main(int argc, char* argv[]) {
 	lua_State* L;
 	Proto* f;
@@ -488,3 +489,4 @@ int main(int argc, char* argv[]) {
 	lua_close(L);
 	return 0;
 }
+#endif
