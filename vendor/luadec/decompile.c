@@ -1673,11 +1673,11 @@ int isTestOpCode(OpCode op) {
 AstStatement* LeaveBlock(Function* F, AstStatement* currStmt, StatementType type) {
 	char msg[128];
 	while (currStmt && currStmt->type != type) {
-		sprintf(msg, "LeaveBlock: unexpected jumping out %s", stmttype[currStmt->type]);
-		SET_ERROR(F, msg);
+		// sprintf(msg, "LeaveBlock: unexpected jumping out %s", stmttype[currStmt->type]);
+		// SET_ERROR(F, msg);
 		if (currStmt->type == FUNCTION_STMT || currStmt->type == FORLOOP_STMT || currStmt->type == TFORLOOP_STMT) {
-			sprintf(msg, "LeaveBlock: cannot find end of %s , stop at %s", stmttype[type], stmttype[currStmt->type]);
-			SET_ERROR(F, msg);
+			// sprintf(msg, "LeaveBlock: cannot find end of %s , stop at %s", stmttype[type], stmttype[currStmt->type]);
+			// SET_ERROR(F, msg);
 			return currStmt;
 		}
 		currStmt = currStmt->parent;
@@ -1686,8 +1686,8 @@ AstStatement* LeaveBlock(Function* F, AstStatement* currStmt, StatementType type
 	if (currStmt) {
 		return currStmt->parent;
 	} else {
-		sprintf(msg, "LeaveBlock: cannot find end of %s ,fatal NULL returned", stmttype[type]);
-		SET_ERROR(F, msg);
+		// sprintf(msg, "LeaveBlock: cannot find end of %s ,fatal NULL returned", stmttype[type]);
+		// SET_ERROR(F, msg);
 		return NULL;
 	}
 }
@@ -2601,13 +2601,13 @@ char* ProcessCode(Proto* f, int indent, int func_checking, char* funcnumstr) {
 				* LOADBOOL Ra 1 0
 				* ::jmp_target
 				*/
-				fprintf(stderr, "processing OP_JMP to } else if (sbc == 2 && GET_OPCODE(code[pc+2]) == OP_LOADBOOL) { \n");
-				fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
-				fprintf(stderr, " for lua files: ");
-				printFileNames(stderr);
-				fprintf(stderr, "\n");
-				fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
-				fflush(stderr);
+				// fprintf(stderr, "processing OP_JMP to } else if (sbc == 2 && GET_OPCODE(code[pc+2]) == OP_LOADBOOL) { \n");
+				// fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
+				// fprintf(stderr, " for lua files: ");
+				// printFileNames(stderr);
+				// fprintf(stderr, "\n");
+				// fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
+				// fflush(stderr);
 				{
 				int boola = GETARG_A(code[pc+1]);
 				int thenaddr = 0, endif = 0;
@@ -2632,25 +2632,25 @@ char* ProcessCode(Proto* f, int indent, int func_checking, char* funcnumstr) {
 				* ::jmp_target
 				* LOADBOOL
 				*/
-				fprintf(stderr, "processing OP_JMP to } else if (GET_OPCODE(idest) == OP_LOADBOOL) { \n");
-				fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
-				fprintf(stderr, " for lua files: ");
-				printFileNames(stderr);
-				fprintf(stderr, "\n");
-				fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
-				fflush(stderr);
+				// fprintf(stderr, "processing OP_JMP to } else if (GET_OPCODE(idest) == OP_LOADBOOL) { \n");
+				// fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
+				// fprintf(stderr, " for lua files: ");
+				// printFileNames(stderr);
+				// fprintf(stderr, "\n");
+				// fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
+				// fflush(stderr);
 				//pc = dest - 2;
 			} else if (sbc == 0) {
 				/* dummy jump -- ignore it */
 				break;
 			} else { // WHY
-				fprintf(stderr, "processing OP_JMP to } else { \n");
-				fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
-				fprintf(stderr, " for lua files: ");
-				printFileNames(stderr);
-				fprintf(stderr, "\n");
-				fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
-				fflush(stderr);
+				// fprintf(stderr, "processing OP_JMP to } else { \n");
+				// fprintf(stderr, " at line %d in file %s\n", __LINE__, __FILE__);
+				// fprintf(stderr, " for lua files: ");
+				// printFileNames(stderr);
+				// fprintf(stderr, "\n");
+				// fprintf(stderr, " at lua function %s pc=%d\n\n", funcnumstr, pc);
+				// fflush(stderr);
 				{
 				int nextpc = pc+1;
 				int nextsbc = sbc-1;
@@ -2763,7 +2763,7 @@ LOGIC_NEXT_JMP:
 					test = NULL;
 					F->currStmt = currStmt->parent;
 				} else {
-					SET_ERROR(F, "LeaveBlock: cannot find 'until' of 'repeat'");
+					//SET_ERROR(F, "LeaveBlock: cannot find 'until' of 'repeat'");
 				}
 				if (test) free(test);
 				if (exp) DeleteLogicExpTree(exp);

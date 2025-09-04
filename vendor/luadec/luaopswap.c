@@ -178,12 +178,12 @@ int generateOp2op(const char* opcodes_def) {
 			if (0 <= li && li < OP2OP_SIZE && 0 <= ri && ri < OP2OP_SIZE) {
 				op2op[li] = ri;
 			} else {
-				fprintf(stderr, " error in line %d : cannot find OpCode or OpNumber not in range(0 - %d).\n", linenum, OP2OP_SIZE);
+				//fprintf(stderr, " error in line %d : cannot find OpCode or OpNumber not in range(0 - %d).\n", linenum, OP2OP_SIZE);
 				retval = 0;
 				break;
 			}
 		} else if (readcount == 1 || readcount > 2) {
-			fprintf(stderr, " error in line %d : One line must have 2 OpCode or OpNumber.\n", linenum);
+			//fprintf(stderr, " error in line %d : One line must have 2 OpCode or OpNumber.\n", linenum);
 			retval = 0;
 			break;
 		}

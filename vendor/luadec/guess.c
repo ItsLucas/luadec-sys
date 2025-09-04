@@ -554,7 +554,7 @@ int luaU_guess_locals(Proto* f, int main) {
 			intArray_Pop(&blocklist);
 		}
 		if (blocklist.size == 0) {
-			fprintf(stderr, "cannot find blockend > %d , pc = %d, f->sizecode = %d\n", pc+1, pc, f->sizecode);
+			//fprintf(stderr, "cannot find blockend > %d , pc = %d, f->sizecode = %d\n", pc+1, pc, f->sizecode);
 		}
 		while ((lastfree!=0) && (regblock[lastfree-1] <= pc+1)) {
 			lastfree--;
