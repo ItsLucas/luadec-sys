@@ -7,7 +7,8 @@ fn main() {
     println!("cargo:rerun-if-changed=vendor/lua-5.1");
     println!("cargo:rerun-if-changed=vendor/lua-5.1-32");
     println!("cargo:rerun-if-changed=vendor/luadec");
-    println!("cargo:rerun-if-changed=src/wrapper.c");
+    println!("cargo:rerun-if-changed=vendor/luadec/luadec_lib.c");
+    println!("cargo:rerun-if-changed=vendor/luadec/luadec_lib.h");
     
     // Choose Lua version based on features
     #[cfg(feature = "lua-5.1-32")]
@@ -68,11 +69,12 @@ fn main() {
         luadec_build.flag(flag);
     }
     
-    // LuaDec source files
+    // LuaDec source files - including our library interface
     let luadec_sources = [
         "decompile.c", "guess.c", "disassemble.c", "proto.c",
         "StringBuffer.c", "structs.c", "statement.c", 
-        "macro-array.c", "expression.c", "lundump-5.1.c"
+        "macro-array.c", "expression.c", "lundump-5.1.c",
+        "luadec.c", "luadec_lib.c"  // Include main luadec.c for globals and our lib
     ];
     
     for source in &luadec_sources {
@@ -80,14 +82,6 @@ fn main() {
     }
     
     luadec_build.compile("luadec");
-    
-    // Build our C wrapper
-    cc::Build::new()
-        .file("src/wrapper.c")
-        .include(&lua_src_dir)
-        .include(&luadec_src_dir)
-        .define("LUAVER", "5.1")
-        .compile("luadec_wrapper");
     
     // Link system libraries
     match target_os.as_str() {
